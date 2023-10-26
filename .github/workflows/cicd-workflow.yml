@@ -1,29 +1,30 @@
 name: CICD
 
 on:
-  push:
-    branches: [cicd-docker-ec2]
+  workflow_dispatch:
+  # push:
+  #   branches: [cicd-docker-ec2]
 
 jobs:
   build:
     runs-on: [ubuntu-latest]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
       - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+        run: docker login -u ${{ var.DOCKER_USER }} -p ${{ secrets.DOCKER_PAT }} 
       - name: Build docker image
-        run: docker build -t integrationninjas/nodejs-app .
+        run: docker build -t niranjanakoni/nodejs-app .
       - name: Publish image to docker hub
-        run: docker push integrationninjas/nodejs-app:latest
+        run: docker push niranjanakoni/nodejs-app:latest
         
   deploy:
     needs: build
     runs-on: [aws-ec2]
     steps:
       - name: Pull image from docker hub
-        run: docker pull integrationninjas/nodejs-app:latest
+        run: docker pull niranjanakoni/nodejs-app:latest
       - name: Delete old container
         run: docker rm -f nodejs-app-container
       - name: Run docker container
-        run: docker run -d -p 5000:5000 --name nodejs-app-container integrationninjas/nodejs-app
+        run: docker run -d -p 5000:5000 --name nodejs-app-container niranjanakoni/nodejs-app:latest
