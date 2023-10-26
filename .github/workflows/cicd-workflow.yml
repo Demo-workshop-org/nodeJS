@@ -12,7 +12,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4.1.1
       - name: Login to docker hub
-        run: docker login -u ${{ var.DOCKER_USER }} -p ${{ secrets.DOCKER_PAT }} 
+        run: docker login -u ${{ env.DOCKER_USER }} -p ${{ secrets.DOCKER_PAT }} 
       - name: Build docker image
         run: docker build -t niranjanakoni/nodejs-app .
       - name: Publish image to docker hub
